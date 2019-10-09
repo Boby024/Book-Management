@@ -1,0 +1,20 @@
+
+.menu-container {
+  /* ... */
+  display: flex;
+  justify-content: center;    /* Add this */
+  color: black;
+}
+.menu {
+  border: 1px solid #fff;
+  width: 900px;
+  display: flex;
+  justify-content: space-around;
+}
+header {
+  background-color: lightskyblue;
+  padding: 30px;
+  text-align: center;
+  font-size: 35px;
+  color: white;
+}

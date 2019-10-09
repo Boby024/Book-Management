@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<app-header></app-header>
+
+
+<div>
+  <button (click)="toggle()" style="padding: 10px; background-color: lightslategray"> Ein Buch hinzufügen {{buttonName}}</button>
+<div style="width: 200px; padding: 10px; border: black; border-radius: 8px">
+  <mat-form-field>
+  <input style="background-color: azure;" matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+</mat-form-field>
+</div>
+<ng-container *ngIf="show">
+    <div class="totalLogin" >
+    <form [formGroup]="buch"  (ngSubmit)="addBuch()" style="max-width:500px;margin:auto">
+      <h2>Buch hinzufügen</h2>
+
+      <div class="input-container">
+        <i class="fa fa-envelope icon"></i>
+        <input class="input-field" type="text" formControlName="titel" placeholder="titel" name="titel" required>
+      </div>
+      <div class="input-container">
+        <i class="fa fa-envelope icon"></i>
+        <input class="input-field" type="text" formControlName="autor" placeholder="autor" name="autor" required>
+      </div>
+      <div class="input-container">
+        <i class="fa fa-envelope icon"></i>
+        <input class="input-field" type="text" formControlName="verlag" placeholder="verlag" name="verlag" required>
+      </div>
+      <div class="input-container">
+        <i class="fa fa-envelope icon"></i>
+        <input class="input-field" type="text" formControlName="erscheinungsjahr" placeholder="erscheinungsjahr" name="erscheinungsjahr" required>
+      </div>
+      <button type="submit" [disabled]="!buch.valid" class="btn">add your book</button>
+    </form>
+
+</div>
+</ng-container>
+<table mat-table [dataSource] = "buecher" class="mat-elevation-z8" >
+
+  <!--- Note that these columns can be defined in any order.
+        The actual rendered columns are set as a property on the row definition" -->
+
+  <!-- id Column -->
+  <ng-container matColumnDef="id">
+    <th mat-header-cell *matHeaderCellDef> id </th>
+    <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+  </ng-container>
+
+  <!-- titel Column -->
+  <ng-container matColumnDef="titel">
+    <th mat-header-cell *matHeaderCellDef> Titel </th>
+    <td mat-cell *matCellDef="let element"> {{element.titel}} </td>
+  </ng-container>
+
+  <!-- autor Column -->
+  <ng-container matColumnDef="autor">
+    <th mat-header-cell *matHeaderCellDef> Autor </th>
+    <td mat-cell *matCellDef="let element"> {{element.autor}} </td>
+  </ng-container>
+
+  <!-- verlag Column -->
+  <ng-container matColumnDef="verlag">
+    <th mat-header-cell *matHeaderCellDef> Verlag </th>
+    <td mat-cell *matCellDef="let element"> {{element.verlag}} </td>
+  </ng-container>
+
+   <!-- erscheinungsjahr Column -->
+  <ng-container matColumnDef="erscheinungsjahr">
+    <th mat-header-cell *matHeaderCellDef> Erscheinungsjahr </th>
+    <td mat-cell *matCellDef="let element"> {{element.erscheinungsjahr}} </td>
+  </ng-container>
+
+   <!-- status Column -->
+  <ng-container matColumnDef="status">
+    <th mat-header-cell *matHeaderCellDef> Status </th>
+    <td mat-cell *matCellDef="let element" > <strong> {{element.status}}</strong>
+      <div *ngIf="changeStatus(element.status)==='in' " ><button (click)="buch_out(element)">ausleihen</button></div>
+      <div *ngIf="changeStatus(element.status)==='out' "><button (click)="buch_in(element)">zurückgeben</button></div>
+      <div><button style="background-color: indianred" (click)="delete_buch(element)" >delete</button> </div></td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>
+<!--<mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator> -->
+
+</div>
+
+</html>
+<!--
+<h2>Login Form</h2>
+
+<form [formGroup]="user"  (ngSubmit)="onSubmit()">
+  <div class="imgcontainer">
+    <img src="img_avatar2.png" alt="Avatar" class="avatar">
+  </div>
+
+  <div class="container">
+    <label for="email"><b>email</b></label>
+    <input type="text" formControlName="email"  placeholder="Enter Username" name="email" required>
+
+    <label for="passwort"><b>Password</b></label>
+    <input type="password"  formControlName="passwort" placeholder="Enter Password" name="passwort" required>
+
+    <button type="submit">Login</button>
+    <label>
+      <input type="checkbox" checked="checked" name="remember"> Remember me
+    </label>
+  </div>
+
+  <div class="container" style="background-color:#f1f1f1">
+
+  </div>
+</form>-->

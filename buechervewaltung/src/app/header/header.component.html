@@ -1,0 +1,10 @@
+<div class='menu-container'>
+      <div class='menu'>
+        <div class='signup'><button (click)="home()" > HOME</button> </div>
+        <div class='signup' *ngIf="checkerLocalLogin() === null " ><button (click)="signUP()" >Willkommen hier register</button> </div>
+        <div class='signup' *ngIf="checkerLocalLogin() !== null " ><button (click)="deleteLocal()" >log out</button> </div>
+        <div class='login' *ngIf="checkerLocalLogin() === null "><button (click)="login()" >login</button> </div>
+        <div class='login' *ngIf="checkerLocalLogin() !== null "><button (click)="dashboard()" >Dashboard von {{getCurentUser()}}</button> </div>
+      </div>
+</div>
+<header> Buecherverwaltung </header>

@@ -1,0 +1,22 @@
+<app-header></app-header>
+
+<div class="total">
+
+<form [formGroup]="user"  (ngSubmit)="onSubmit()" style="max-width:500px;margin:auto">
+  <h2>Register Form</h2>
+
+  <div class="input-container">
+    <i class="fa fa-envelope icon"></i>
+    <input class="input-field" type="text" formControlName="email" placeholder="Email" name="email" required>
+  </div>
+
+  <div class="input-container">
+    <i class="fa fa-key icon"></i>
+    <input class="input-field" type="password" formControlName="passwort" placeholder="Password" name="passwort" required>
+  </div>
+
+  <button type="submit" [disabled]="!user.valid" class="btn">Register</button>
+</form>
+
+</div>
+
