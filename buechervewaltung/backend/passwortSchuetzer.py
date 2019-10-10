@@ -19,13 +19,13 @@ def verify_password(stored_password, provided_password):
     pwdhash = binascii.hexlify(pwdhash).decode('ascii')
     return pwdhash == stored_password
 
-passwort= 'epongek'
+passwort= 'mypassword'
 hashPass= hash_password(passwort)
 print(hashPass)
 print('fertig')
 print(len(hashPass))
 
-if verify_password(hashPass,'epongek'):
+if verify_password(hashPass,'mypassword'):
   print('login Done')
 else:
   print('login fail')
