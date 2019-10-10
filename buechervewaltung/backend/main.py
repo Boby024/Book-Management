@@ -262,7 +262,7 @@ def zurueckgeben():
   cur.execute("SELECT * FROM buecher")
   query= cur.fetchall()
 
-  # damit dei Rückgabe-Urhzeit gesehen wird, habe ich deinfach das Datum nicht auf 'NULL' zurücksetzen
+  # damit dei Rückgabe-Urhzeit gesehen wird, habe ich einfach das Datum nicht auf 'NULL' zurücksetzen
   if checkerUser(query,id,email)== True :
     response= cur.execute("UPDATE buecher SET status= %s  WHERE id = %s ",(status, id) )
     mysql.connection.commit()
