@@ -27,7 +27,7 @@ export class HomeComponent implements OnInit {
  response: any;
  users: any [];
  buecher: any [];
- displayedColumns: string[] = ['id', 'titel', 'autor', 'verlag', 'erscheinungsjahr', 'status'];
+ displayedColumns: string[] = ['id', 'titel', 'autor', 'verlag', 'erscheinungsjahr', 'status', 'ausgeliehen_am'];
  dataSource: MatTableDataSource<Buch[]>;
  public show = false;
  public buttonName: any = 'Show';
@@ -82,9 +82,9 @@ getBuecher() {
   }
   changeStatus( status: string) {
    if (status === 'in') {
-     return 'in';
+     return 'verfügbar';
    } else {
-     return 'out';
+     return status;
    }
   }
   getBooks() {

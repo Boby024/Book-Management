@@ -6,4 +6,5 @@ export interface Buch {
   // erscheinungsjahr: Date;
   erscheinungsjahr: string;
   status: string;
+  ausgeliehen_am: string;
 }

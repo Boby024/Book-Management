@@ -1,5 +1,7 @@
 from flask import Flask, jsonify, request
 import mysql.connector
+from _datetime import datetime
+
 #from flaskext import MySQL
 from flask_mysqldb import MySQL
 from datetime import datetime
@@ -59,6 +61,25 @@ def checkerUser(query,id, email):
   else:
     checker= False
   return checker
+
+# diese Funktion gibt uns die Now time , damit man weiß, um wie viel der User das Buch ausgeliehen hast
+def checkertime(query):
+
+  if query >0 :
+    gerade = datetime.now()
+    # print(gerade)
+    # print (str(gerade))
+
+    ohneDezimal = str(gerade).split('.')
+    # print (ohneDezimal)
+    # print (ohneDezimal[0])
+    datetime_object = datetime.strptime(ohneDezimal[0], '%Y-%m-%d %H:%M:%S')
+    # print ( datetime_object)
+    res= datetime_object
+  else:
+    res= '2000-01-01 00:00:00'
+
+  return res
 
 #Aufruf aller User , wenn es geprüft wird, ob der User im System existiert
 @app.route('/api/users', methods=['GET'])
@@ -123,7 +144,7 @@ def all_buch():
     cur.execute("SELECT * FROM buecher")
     result = cur.fetchall()
     cur.close()
-    modeller = ("id", "titel", "autor", "verlag", "erscheinungsjahr", "status")
+    modeller = ("id", "titel", "autor", "verlag", "erscheinungsjahr", "status","ausgeliehen_am")
     #modeller = {"status", "titel", "id", "verlag", "titel", "erscheinungsjahr"}
     final_result = prepareforJSON(result,modeller)
     return jsonify(final_result)
@@ -211,6 +232,8 @@ def ausleihen():
   if len(list_out )< 3 and checkStatus(myresult,int(id) )== 'free':
     # cur.execute("UPDATE buecher SET stauts = %s WHERE  id = %s ", (email, id))
     response = cur.execute("UPDATE buecher SET status = %s  WHERE  id = %s ", (email, id))
+    query= checkertime(response)
+    cur.execute("UPDATE buecher SET ausgeliehen_am = %s  WHERE  id = %s ", (query,id))
     mysql.connection.commit()
     cur.close()
 
@@ -239,6 +262,7 @@ def zurueckgeben():
   cur.execute("SELECT * FROM buecher")
   query= cur.fetchall()
 
+  # damit dei Rückgabe-Urhzeit gesehen wird, habe ich deinfach das Datum nicht auf 'NULL' zurücksetzen
   if checkerUser(query,id,email)== True :
     response= cur.execute("UPDATE buecher SET status= %s  WHERE id = %s ",(status, id) )
     mysql.connection.commit()
