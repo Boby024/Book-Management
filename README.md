@@ -1,5 +1,6 @@
 # Book-Management
 Realisierung einer Bücherverwaltung : (Frontend: Angular and Backend: Python, Flask {api} )
+*volle Version ,on the branch: fullversion
 
 Aufgabenstellung 
 Im Rahmen dieser Übungsaufgabe solle ich eine Webanwendung erstellen, die eine Bücherverwaltung realisiert. Benutzer sollen sich an einem Online-System anmelden und über eine Weboberfläche einen Bücherkatalog einsehen, verwalten sowie Bücher ausleihen können. Darüber hinaus soll das System eine geeignete REST-Schnittstelle zur Verfügung stellen, die ebenfalls einige dieser Funktionen anbietet.
