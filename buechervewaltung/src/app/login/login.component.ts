@@ -14,8 +14,8 @@ import {AuthService} from '../auth.service';
 })
 export class LoginComponent implements OnInit {
 user = this.fb.group({
-    email: ['', Validators.required ],
-    passwort: ['', Validators.required ],
+    email: ['', Validators.email ],
+    passwort: ['', Validators.minLength(5) ],
   });
  file: any ;
  response: any;

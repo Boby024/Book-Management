@@ -7,12 +7,12 @@
 
   <div class="input-container">
     <i class="fa fa-envelope icon"></i>
-    <input class="input-field" type="text" formControlName="email" placeholder="Email" name="email" required>
+    <input class="input-field" type="email" formControlName="email" placeholder="Email" name="email" required>
   </div>
 
   <div class="input-container">
     <i class="fa fa-key icon"></i>
-    <input class="input-field" type="password" formControlName="passwort" placeholder="Password" name="passwort" required>
+    <input class="input-field" type="password" minlength="5" formControlName="passwort" placeholder="Password" name="passwort" required>
   </div>
 
   <button type="submit" [disabled]="!user.valid" class="btn">Login</button>
