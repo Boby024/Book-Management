@@ -18,7 +18,7 @@ export class AuthService {
   }
   public get currentUserValue() {
     this.currentUserSubject = localStorage.getItem('email');
-    console.log(this.currentUserSubject);
+    // console.log(this.currentUserSubject);
     return this.currentUserSubject;
   }
 

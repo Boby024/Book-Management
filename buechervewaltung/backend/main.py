@@ -10,7 +10,7 @@ app = Flask(__name__)
 #Verbindung mit der Datenbank
 app.config['MYSQL_HOST']= 'localhost'
 app.config['MYSQL_USER']= 'Bob'
-app.config['MYSQL_PASSWORD']= ''
+app.config['MYSQL_PASSWORD']= 'Iamusing24@'
 app.config['MYSQL_DB']= 'Buecherverwaltung'
 mysql= MySQL(app)
 
@@ -100,16 +100,20 @@ def add_user():
   data= request.get_json()
   email = data['email']
   passwort = data['passwort']
-  cur = mysql.connection.cursor()
-  cur.execute("SELECT * FROM users")
-  list_users= cur.fetchall()
-  if (checker_Contains(list_users,email,passwort)== 'no'):
-    cur.execute("INSERT INTO users (email, passwort) VALUES (%s, %s)", (email, passwort))
-    mysql.connection.commit()
-    cur.close()
-    result = {'message': 'register done', 'email' : email}
-  else:
-    result = {'message': 'register fail'}
+  try:
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM users")
+    list_users = cur.fetchall()
+    if (checker_Contains(list_users, email, passwort) == 'no'):
+      cur.execute("INSERT INTO users (email, passwort) VALUES (%s, %s)", (email, passwort))
+      mysql.connection.commit()
+      cur.close()
+      result = {'message': 'register done', 'email': email}
+    else:
+      result = {'message': 'register fail'}
+  except mysql.connector.Error as err:
+    result = {"message" : "connection failed"}
+    print(err)
   return jsonify(result)
 
 
@@ -119,34 +123,41 @@ def login():
   data = request.get_json()
   email = data['email']
   passwort= data['passwort']
-  cur = mysql.connection.cursor()
-  #cur.execute("SELECT * FROM users where email= %s", str(email) ) # ich nutze nur Email hier, weil die Emails in der Datenbanken als 'unique' sein muüssen
-  cur.execute("SELECT * FROM users")
-  list_users = cur.fetchall()
-  cur.close()
+  try:
+    cur = mysql.connection.cursor()
+    # cur.execute("SELECT * FROM users where email= %s", str(email) ) # ich nutze nur Email hier, weil die Emails in der Datenbanken als 'unique' sein muüssen
+    cur.execute("SELECT * FROM users")
+    list_users = cur.fetchall()
+    cur.close()
 
-  # ich checke in der Liste von allen User, ob der angegebenen Resquest(email and user ) in unserm System existiert
-  #und wenn ja wird eine message mit 'done', wenn nein mit message 'fail'
-  if(checker_Contains( list_users,email,passwort) == 'no'):
-    result = {'message': 'login fail'}
-  else:
-    result = {'message': 'login done', 'email' : email}
-  # wenn die Daten von User in der Liste steht => done
-  # wenn nicht, => fail
-
+    # ich checke in der Liste von allen User, ob der angegebenen Resquest(email and user ) in unserm System existiert
+    # und wenn ja wird eine message mit 'done', wenn nein mit message 'fail'
+    if (checker_Contains(list_users, email, passwort) == 'no'):
+      result = {'message': 'login fail'}
+    else:
+      result = {'message': 'login done', 'email': email}
+    # wenn die Daten von User in der Liste steht => done
+    # wenn nicht, => fail
+  except mysql.connector.Error as err:
+    result  = {"message" : "connection failed"}
+    print(err)
   return jsonify(result)
 
 
 #Aufruf aller User , wenn  sie gefragt werden
 @app.route('/api/all_Buch', methods=['GET'])
 def all_buch():
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM buecher")
-    result = cur.fetchall()
-    cur.close()
-    modeller = ("id", "titel", "autor", "verlag", "erscheinungsjahr", "status","ausgeliehen_am")
-    #modeller = {"status", "titel", "id", "verlag", "titel", "erscheinungsjahr"}
-    final_result = prepareforJSON(result,modeller)
+    try:
+      cur = mysql.connection.cursor()
+      cur.execute("SELECT * FROM buecher")
+      result = cur.fetchall()
+      cur.close()
+      modeller = ("id", "titel", "autor", "verlag", "erscheinungsjahr", "status", "ausgeliehen_am")
+      # modeller = {"status", "titel", "id", "verlag", "titel", "erscheinungsjahr"}
+      final_result = prepareforJSON(result, modeller)
+    except mysql.connector.Error as err:
+      final_result = {"message": "connection failed"}
+      print(err)
     return jsonify(final_result)
 
 
@@ -156,26 +167,28 @@ def all_buch():
 @app.route('/api/add_buch', methods=['POST'])
 def hinzufügen_buch():
   data = request.get_json()
-  titel= data['titel']
-  autor= data['autor']
-  verlag= data['verlag']
-  date_str= data['erscheinungsjahr']
+  titel = data['titel']
+  autor = data['autor']
+  verlag = data['verlag']
+  date_str = data['erscheinungsjahr']
   erscheinungsjahr = datetime.strptime(date_str, '%m-%d-%Y').date()
   val = (titel, autor, verlag, erscheinungsjahr)
-
-  cur = mysql.connection.cursor()
-  #Hier checke ich erstens, ob das Buch schon im System existiert (=> mit gleichen Eigenschaften)
-  cur.execute("SELECT * FROM buecher")
-  list_buecher = cur.fetchall()
-  if (checker_Contains(list_buecher,titel,autor) == 'no'):
-    cur.execute("INSERT INTO buecher (titel,autor, verlag, erscheinungsjahr) VALUES (%s,%s,%s,%s)",
-                (titel, autor, verlag, erscheinungsjahr))
-    mysql.connection.commit()
-    cur.close()
-    result = {'message': 'Buch added'}
-  else:
-    result= {'message': 'Buch already exists'} # wenn das Buch schon existiert , wird das System 'already' schicken
-
+  try:
+    cur = mysql.connection.cursor()
+    # Hier checke ich erstens, ob das Buch schon im System existiert (=> mit gleichen Eigenschaften)
+    cur.execute("SELECT * FROM buecher")
+    list_buecher = cur.fetchall()
+    if (checker_Contains(list_buecher, titel, autor) == 'no'):
+      cur.execute("INSERT INTO buecher (titel,autor, verlag, erscheinungsjahr) VALUES (%s,%s,%s,%s)",
+                  (titel, autor, verlag, erscheinungsjahr))
+      mysql.connection.commit()
+      cur.close()
+      result = {'message': 'Buch added'}
+    else:
+      result = {'message': 'Buch already exists'}  # wenn das Buch schon existiert , wird das System 'already' schicken
+  except mysql.connector.Error as err:
+    result = {"message": "connection failed"}
+    print(err)
   return jsonify(result)
 
 
@@ -186,20 +199,24 @@ def delet_buch():
   data = request.get_json()
   id= data['id']
   cur = mysql.connection.cursor()
-  #response=cur.execute("DELETE FROM buecher where id = " + str(id) )
-  response = cur.execute("DELETE FROM buecher where id = %s ", (id,) )
-  # ALTER TABLE buecher AUTO_INCREMENT = id damit das 'id'- des Buchs für neue Bücher verfügbar wird
-  #response_1= cur.execute("ALTER TABLE buecher AUTO_INCREMENT = " + str(id) )
-  response_1 = cur.execute("ALTER TABLE buecher AUTO_INCREMENT = %s ",  (id,) )
-  mysql.connection.commit()
-  cur.close()
+  try:
+    # response=cur.execute("DELETE FROM buecher where id = " + str(id) )
+    response = cur.execute("DELETE FROM buecher where id = %s ", (id,))
+    # ALTER TABLE buecher AUTO_INCREMENT = id damit das 'id'- des Buchs für neue Bücher verfügbar wird
+    # response_1= cur.execute("ALTER TABLE buecher AUTO_INCREMENT = " + str(id) )
+    response_1 = cur.execute("ALTER TABLE buecher AUTO_INCREMENT = %s ", (id,))
+    mysql.connection.commit()
+    cur.close()
 
-  # wenn das Delete funktioniert, dann wird 'response = 1 '
-  if response > 0:
-    result = {'message': 'buch deleted'}
-    #result = {'message': 'buch deleted', 'response': response}
-  else:
-    result = {'message': 'buch not exist'}
+    # wenn das Delete funktioniert, dann wird 'response = 1 '
+    if response > 0:
+      result = {'message': 'buch deleted'}
+      # result = {'message': 'buch deleted', 'response': response}
+    else:
+      result = {'message': 'buch not exist'}
+  except mysql.connector.Error as err:
+    result = {"message": "connection failed"}
+    print(err)
   return jsonify( result )
 
 
@@ -211,41 +228,45 @@ def ausleihen():
   email= data['email']
   id= data['id']
 
-  # im System sind 02 status zu erkenen: 'in': neues Buch oder zurückgegeben und dann einfach die email-adresse (von der User , der das Buch ausgeliehen hast )
-  # hier kriegen wir eine Liste von allen Buecher (id, titel,autor,verlag,erscheinungsjahr, status )
-  cur = mysql.connection.cursor()
-  #response= cur.execute("SELECT * FROM buecher WHERE status = %s " , email )
-  cur.execute("SELECT * FROM buecher")
-  myresult = cur.fetchall()
+  try:
+   # im System sind 02 status zu erkenen: 'in': neues Buch oder zurückgegeben und dann einfach die email-adresse (von der User , der das Buch ausgeliehen hast )
+   # hier kriegen wir eine Liste von allen Buecher (id, titel,autor,verlag,erscheinungsjahr, status )
+   cur = mysql.connection.cursor()
+   # response= cur.execute("SELECT * FROM buecher WHERE status = %s " , email )
+   cur.execute("SELECT * FROM buecher")
+   myresult = cur.fetchall()
 
-  # hier rechnen wir einfach nur wie viel Bücher den User schon ausgeliehen hat und vergleichen wir, ob das unter 4 ist
-  list_out = []
-  for each_list in myresult:
-    # position_status[5] : denn in der Tabelle buehcer ist status in der 6. Spalte
-    # print(each_list)
-    status = each_list[5]
-    # print(status)
-    if status == email:  # nur email weil die Email 'unique' sind.
-      list_out.append(status)
+   # hier rechnen wir einfach nur wie viel Bücher den User schon ausgeliehen hat und vergleichen wir, ob das unter 4 ist
+   list_out = []
+   for each_list in myresult:
+     # position_status[5] : denn in der Tabelle buehcer ist status in der 6. Spalte
+     # print(each_list)
+     status = each_list[5]
+     # print(status)
+     if status == email:  # nur email weil die Email 'unique' sind.
+       list_out.append(status)
 
-  # wenn der User(mitgilfe seiner Email) unter 4 Bücher ausgeliehen hat, dann aktualisieren wir den Status des Buchs im System mit seinem email.
-  if len(list_out )< 3 and checkStatus(myresult,int(id) )== 'free':
-    # cur.execute("UPDATE buecher SET stauts = %s WHERE  id = %s ", (email, id))
-    response = cur.execute("UPDATE buecher SET status = %s  WHERE  id = %s ", (email, id))
-    query= checkertime(response)
-    cur.execute("UPDATE buecher SET ausgeliehen_am = %s  WHERE  id = %s ", (query,id))
-    mysql.connection.commit()
-    cur.close()
+   # wenn der User(mitgilfe seiner Email) unter 4 Bücher ausgeliehen hat, dann aktualisieren wir den Status des Buchs im System mit seinem email.
+   if len(list_out) < 3 and checkStatus(myresult, int(id)) == 'free':
+     # cur.execute("UPDATE buecher SET stauts = %s WHERE  id = %s ", (email, id))
+     response = cur.execute("UPDATE buecher SET status = %s  WHERE  id = %s ", (email, id))
+     query = checkertime(response)
+     cur.execute("UPDATE buecher SET ausgeliehen_am = %s  WHERE  id = %s ", (query, id))
+     mysql.connection.commit()
+     cur.close()
 
-    # ich schicken hier 'done'  als response wenn die Function ausleihen funktioniert hat und wenn nicht 'fail'
-    #result = {'ausgeliehen': 'done'}
-    if response > 0:
-      result_1 = {'ausgeliehen': 'done'}
-    else:
-      result_1 = {'ausgeliehen': 'fail'}
-    result = result_1
-  else:
-    result = {'ausgeliehen': ' max 3 books'}
+     # ich schicken hier 'done'  als response wenn die Function ausleihen funktioniert hat und wenn nicht 'fail'
+     # result = {'ausgeliehen': 'done'}
+     if response > 0:
+       result_1 = {'ausgeliehen': 'done'}
+     else:
+       result_1 = {'ausgeliehen': 'fail'}
+     result = result_1
+   else:
+     result = {'ausgeliehen': ' max 3 books'}
+  except mysql.connector.Error as err:
+    result = {"message": "connection failed"}
+    print(err)
 
   return jsonify(result)
 
@@ -258,23 +279,27 @@ def zurueckgeben():
   id= data['id']
   email= data['email']
   status='in'
-  cur = mysql.connection.cursor()
-  cur.execute("SELECT * FROM buecher")
-  query= cur.fetchall()
+  try:
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM buecher")
+    query = cur.fetchall()
 
-  # damit dei Rückgabe-Urhzeit gesehen wird, habe ich einfach das Datum nicht auf 'NULL' zurücksetzen
-  if checkerUser(query,id,email)== True :
-    response= cur.execute("UPDATE buecher SET status= %s  WHERE id = %s ",(status, id) )
-    mysql.connection.commit()
-    cur.close()
+    # damit dei Rückgabe-Urhzeit gesehen wird, habe ich einfach das Datum nicht auf 'NULL' zurücksetzen
+    if checkerUser(query, id, email) == True:
+      response = cur.execute("UPDATE buecher SET status= %s  WHERE id = %s ", (status, id))
+      mysql.connection.commit()
+      cur.close()
 
-    if response > 0:
-      result_1 = {'zurueckgegeben': 'done'}
+      if response > 0:
+        result_1 = {'zurueckgegeben': 'done'}
+      else:
+        result_1 = {'zurueckgegeben': 'fail'}
+      result = result_1
     else:
-      result_1 = {'zurueckgegeben': 'fail'}
-    result= result_1
-  else:
-    result= {'zurueckgegeben': 'not the same user'}
+      result = {'zurueckgegeben': 'not the same user'}
+  except mysql.connector.Error as err:
+    result = {"message": "connection failed"}
+    print(err)
   return jsonify(result)
 
 

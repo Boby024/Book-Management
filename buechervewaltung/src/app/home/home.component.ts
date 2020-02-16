@@ -27,12 +27,15 @@ export class HomeComponent implements OnInit {
  response: any;
  users: any [];
  buecher: any [];
+ foundBook: any [] = [];
+ statusSearch = false;
  displayedColumns: string[] = ['id', 'titel', 'autor', 'verlag', 'erscheinungsjahr', 'status', 'ausgeliehen_am'];
  dataSource: MatTableDataSource<Buch[]>;
  public show = false;
  public buttonName: any = 'Show';
  resp: Resp;
  selectedBuch: Buch;
+ feedback: any;
 
  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
   @ViewChild(MatSort, {static: true}) sort: MatSort;
@@ -48,7 +51,30 @@ export class HomeComponent implements OnInit {
     // this.getBooks();
   }
   applyFilter(filterValue: string) {
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+   console.log(filterValue);
+   console.log(this.buecher);
+   this.statusSearch = true;
+   if (filterValue === ' ') {
+
+    } else if (filterValue === '') {
+
+    } else if (filterValue === undefined ) {
+   } else {
+     // this.dataSource = new MatTableDataSource(this.foundBook);
+     this.foundBook = [];
+      for (let i = 0; i < this.buecher.length; i++) {
+        if ( this.buecher[i].titel.toLowerCase().indexOf( filterValue.toLowerCase() ) > -1) {
+           this.foundBook.push(this.buecher[i]);
+           console.log(this.foundBook);
+        }
+      }
+      // this.foundBook = [];
+      /* this.buecher = [];
+      for ( let k = 0; k < this.foundBook.length; k++) {
+        this.buecher[k] = this.foundBook[k];
+      }
+      this.foundBook = []; */
+    }
   }
   getUsers() {
      console.log( this.dataService.getAllUsers().subscribe( data => { this.users =  data;  console.log(this.users); } )
@@ -57,9 +83,8 @@ export class HomeComponent implements OnInit {
 getBuecher() {
      // console.log( this.dataService.getAll_Buch().subscribe( data => { this.buecher =  data;  console.log(this.buecher); } )
   this.dataService.getAll_Buch().subscribe( data => {
-    this.buecher =  data;
-    // this.dataSource = data;
-    // console.log(this.buecher);
+    this.feedback = data;
+    if ( !this.feedback.message) { this.buecher =  this.feedback; }
      } );
   }
   addBuch() {

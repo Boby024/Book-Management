@@ -5,6 +5,10 @@ import { HttpClientModule } from '@angular/common/http';
 import { RouterModule, Routes } from '@angular/router';
 import {MatFormFieldModule, MatInputModule, MatSortModule, MatTableModule, MatPaginatorModule} from '@angular/material';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {MatCardModule} from '@angular/material/card';
+import {MatButtonModule} from '@angular/material/button';
+
+
 
 
 import { AppComponent } from './app.component';
@@ -50,6 +54,8 @@ const appRoutes: Routes = [
     MatInputModule,
     BrowserAnimationsModule,
     MatPaginatorModule,
+    MatCardModule,
+    MatButtonModule,
     // <-- debugging purposes only)
   ],
   providers: [HomeComponent, DataService, AuthService, LoginComponent, RegisterComponent, DashboardComponent ],
